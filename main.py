@@ -23,9 +23,9 @@ def generate_pattern_values(n,d):
     return X, y
 
 
-n, d = 80, 4
-beta = 1.0  
-P = 200
+n, d = 80, 1
+beta = 1.0
+P = 500
 
 
 X,y = generate_pattern_values(n,d)
@@ -115,24 +115,32 @@ def generate_pytorch_model(X,y,beta,hidden_neurones_num):
     return model
     
 
-def test_models(models, X_test, y_test):
+def test_models(models, X_test, y_test, name="Test"):
     X_test_torch = torch.tensor(X_test, dtype=torch.float32)
     y_test_torch = torch.tensor(y_test, dtype=torch.float32).unsqueeze(1)
     
-    criterion = nn.MSELoss()
+    criterion = nn.MSELoss(reduction="sum")
     for model in models:
         model.eval()
         with torch.no_grad():
             predictions = model(X_test_torch)
-            test_loss = criterion(predictions, y_test_torch) + pt.l2_regularization(model)
-            print(f'Test Loss for {model.name}: {test_loss.item():.4f}')
-            print(f"MSE Loss for {model.name}:", criterion(predictions, y_test_torch).item())
+            test_loss = 0.5 * criterion(predictions, y_test_torch) + pt.l2_regularization(model)
+            print(f'  {name} Loss for {model.name}: {test_loss.item():.4f}')
+            print(f"  MSE Loss for {model.name}: (noting to interepret here)", criterion(predictions, y_test_torch).item())
 
 
 if __name__ == '__main__':
     model_conv, u_list, alpha_list = generate_convex_model(X_train,y_train, beta, P)
     model_pytorch = generate_pytorch_model(X_train,y_train,beta, len(u_list))
     
+    # Test model on train data
+    # (If everything goes well, convex models should be better)
+    print("Figures de mérite sur les données d'entrainement")
+    test_models([model_conv, model_pytorch], X_train, y_train, name="Train")
+
+    # Test model on testing data
+    # (Nothing can be said here)
+    print("Figures de mérite sur les données de test")
     test_models([model_conv, model_pytorch], X_test, y_test)
     
     print(model_conv)

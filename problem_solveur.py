@@ -60,15 +60,15 @@ def construction_reseau(v_opti,w_opti,P_tilde):
     for i in range(P_tilde):
         vi_norm = np.linalg.norm(v_opti[i])
         if vi_norm >  1e-6: # toujours vérifier que le vecteur n'est pas 0 quand on divise 
-            u = v_opti[i] / vi_norm
-            alpha = vi_norm
+            u = v_opti[i] / np.sqrt(vi_norm)
+            alpha = np.sqrt(vi_norm)
             u_list.append(u)
             alpha_list.append(alpha)
         
         wi_norm = np.linalg.norm(w_opti[i])
         if wi_norm >  1e-6:
-            u = w_opti[i] / wi_norm
-            alpha = -wi_norm # seul changement avec les vi, on prend l'opposé
+            u = w_opti[i] / np.sqrt(wi_norm)
+            alpha = -np.sqrt(wi_norm) # seul changement avec les vi, on prend l'opposé
             u_list.append(u)
             alpha_list.append(alpha)
     return u_list, alpha_list

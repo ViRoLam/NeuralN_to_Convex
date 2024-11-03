@@ -7,7 +7,7 @@ import numpy as np
 def l2_regularization(model):
     l2_loss = torch.tensor(0.0, requires_grad=True)  # Initialize L2 loss
     for param in model.parameters():
-        l2_loss = l2_loss + torch.norm(param, 2)  # Add the L2 norm of the parameters
+        l2_loss = l2_loss + 0.5 * torch.norm(param, 2).pow(2)  # Add the L2 norm of the parameters
     return l2_loss
 
 class TwoLayerNN(nn.Module):
