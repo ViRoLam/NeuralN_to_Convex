@@ -8,6 +8,8 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import visualisation as vs
 
 
 #On va d'abord générer des valeurs aléatoires 
@@ -23,9 +25,9 @@ def generate_pattern_values(n,d):
     return X, y
 
 
-n, d = 80, 1
+n, d = 400, 2
 beta = 1.0
-P = 500
+P = 10
 
 
 X,y = generate_pattern_values(n,d)
@@ -44,7 +46,7 @@ def generate_convex_model(X,y, beta,P):
     return: trained model
     """
     print("Génération des matrices D_i ...")
-    D = gm.generate_D_matrices(X, P)
+    D = gm.generate_D_matrices(X, P, exactly=True)
 
     # paramètre de régularisation
     P_tilde = len(D)
@@ -126,7 +128,7 @@ def test_models(models, X_test, y_test, name="Test"):
             predictions = model(X_test_torch)
             test_loss = 0.5 * criterion(predictions, y_test_torch) + pt.l2_regularization(model)
             print(f'  {name} Loss for {model.name}: {test_loss.item():.4f}')
-            print(f"  MSE Loss for {model.name}: (noting to interepret here)", criterion(predictions, y_test_torch).item())
+            #print(f"  MSE Loss for {model.name}: (noting to interepret here)", criterion(predictions, y_test_torch).item())
 
 
 if __name__ == '__main__':
@@ -143,20 +145,22 @@ if __name__ == '__main__':
     print("Figures de mérite sur les données de test")
     test_models([model_conv, model_pytorch], X_test, y_test)
     
-    print(model_conv)
-    print(model_pytorch)
+    #print(model_conv)
+    #print(model_pytorch)
     
     #print(len(model_conv.parameters()))
     #print(len(model_pytorch.parameters()))
 
     # On peut maintenant comparer les deux modèles
+    P_values = [10, 20, 30, 40, 50, 60]
+    vs.visualize_performance(X_train, y_train, X_test, y_test, beta, P_values, generate_convex_model, generate_pytorch_model)
     
     
-    
-
-
-
-
+### TODO: 
+   
 # On va devoir aussi faire des visualisations 
-# On s'entraine avec des solveurs normaux, et on compare 
+# On s'entraine avec
+# des solveurs normaux, et on compare 
 # On peut faire vaier les P et comparer les performances avec la loss des solveurs normaux
+
+# On va aussi pouvoir grouper les différent points pour voir si on peut faire des clusters

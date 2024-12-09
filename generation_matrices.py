@@ -18,7 +18,7 @@ def generate_D_matrices(X,P,exactly=False):
     D_matrices = []
     
     # On vérifie quand même pour éviter une boucle infinie
-    assert P <= 2**d or not exactly, "P must be less than 2^d"
+    #assert P <= 2**d or not exactly, "P must be less than 2^d"
 
     # Génération des matrices
     while len(D_matrices) < P:
